@@ -411,7 +411,7 @@ class JsonDiffer(object):
             elif sign == -1:
                 deleted.insert(0, (pos, value))
             elif sign == 0 and s < 1:
-                changed[pos] = value
+                changed[str(pos)] = value
             tot_s += s
         tot_n = len(X) + len(inserted)
         if tot_n == 0:
