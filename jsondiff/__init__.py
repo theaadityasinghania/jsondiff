@@ -72,7 +72,7 @@ class JsonDiffSyntax(object):
 class CompactJsonDiffSyntax(object):
     def emit_set_diff(self, a, b, s, added, removed):
         if s == 0.0 or len(removed) == len(a):
-            return {replace: b} if isinstance(b, dict) else b
+            return {'replace': b} if isinstance(b, dict) else b
         else:
             d = {}
             if removed:
@@ -83,40 +83,40 @@ class CompactJsonDiffSyntax(object):
 
     def emit_list_diff(self, a, b, s, inserted, changed, deleted):
         if s == 0.0:
-            return {replace: b} if isinstance(b, dict) else b
+            return {'replace': b} if isinstance(b, dict) else b
         elif s == 1.0:
             return {}
         else:
             d = changed
             if inserted:
-                d[insert] = inserted
+                d['insert'] = inserted
             if deleted:
-                d[delete] = [pos for pos, value in deleted]
+                d['delete'] = [pos for pos, value in deleted]
             return d
 
     def emit_dict_diff(self, a, b, s, added, changed, removed):
         if s == 0.0:
-            return {replace: b} if isinstance(b, dict) else b
+            return {'replace': b} if isinstance(b, dict) else b
         elif s == 1.0:
             return {}
         else:
             changed.update(added)
             if removed:
-                changed[delete] = list(removed.keys())
+                changed['delete'] = list(removed.keys())
             return changed
 
     def emit_value_diff(self, a, b, s):
         if s == 1.0:
             return {}
         else:
-            return {replace: b} if isinstance(b, dict) else b
+            return {'replace': b} if isinstance(b, dict) else b
 
     def patch(self, a, d):
         if isinstance(d, dict):
             if not d:
                 return a
-            if replace in d:
-                return d[replace]
+            if str(replace) in d:
+                return d['replace']
             if isinstance(a, dict):
                 a = dict(a)
                 for k, v in d.items():
@@ -134,10 +134,10 @@ class CompactJsonDiffSyntax(object):
                 original_type = type(a)
                 a = list(a)
                 if delete in d:
-                    for pos in d[delete]:
+                    for pos in d['delete']:
                         a.pop(pos)
                 if insert in d:
-                    for pos, value in d[insert]:
+                    for pos, value in d['insert']:
                         a.insert(pos, value)
                 for k, v in d.items():
                     if k is not delete and k is not insert:
@@ -178,9 +178,9 @@ class ExplicitJsonDiffSyntax(object):
         else:
             d = changed
             if inserted:
-                d[insert] = inserted
+                d['insert'] = inserted
             if deleted:
-                d[delete] = [pos for pos, value in deleted]
+                d['delete'] = [pos for pos, value in deleted]
             return d
 
     def emit_dict_diff(self, a, b, s, added, changed, removed):
@@ -191,11 +191,11 @@ class ExplicitJsonDiffSyntax(object):
         else:
             d = {}
             if added:
-                d[insert] = added
+                d['insert'] = added
             if changed:
-                d[update] = changed
+                d['update'] = changed
             if removed:
-                d[delete] = list(removed.keys())
+                d['delete'] = list(removed.keys())
             return d
 
     def emit_value_diff(self, a, b, s):
@@ -225,9 +225,9 @@ class SymmetricJsonDiffSyntax(object):
         else:
             d = changed
             if inserted:
-                d[insert] = inserted
+                d['insert'] = inserted
             if deleted:
-                d[delete] = deleted
+                d['delete'] = deleted
             return d
 
     def emit_dict_diff(self, a, b, s, added, changed, removed):
@@ -238,9 +238,9 @@ class SymmetricJsonDiffSyntax(object):
         else:
             d = changed
             if added:
-                d[insert] = added
+                d['insert'] = added
             if removed:
-                d[delete] = removed
+                d['delete'] = removed
             return d
 
     def emit_value_diff(self, a, b, s):
@@ -272,10 +272,10 @@ class SymmetricJsonDiffSyntax(object):
                 original_type = type(a)
                 a = list(a)
                 if delete in d:
-                    for pos, value in d[delete]:
+                    for pos, value in d['delete']:
                         a.pop(pos)
                 if insert in d:
-                    for pos, value in d[insert]:
+                    for pos, value in d['insert']:
                         a.insert(pos, value)
                 for k, v in d.items():
                     if k is not delete and k is not insert:
@@ -322,10 +322,10 @@ class SymmetricJsonDiffSyntax(object):
                         k = int(k)
                         b[k] = self.unpatch(b[k], v)
                 if insert in d:
-                    for pos, value in reversed(d[insert]):
+                    for pos, value in reversed(d['insert']):
                         b.pop(pos)
                 if delete in d:
-                    for pos, value in reversed(d[delete]):
+                    for pos, value in reversed(d['delete']):
                         b.insert(pos, value)
                 if original_type is not list:
                     b = original_type(b)
